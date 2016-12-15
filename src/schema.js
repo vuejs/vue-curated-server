@@ -37,6 +37,7 @@ const typeDefs = [`
   type Query {
     modules: [Module]
     moduleCategories: [ModuleCategory]
+    searchModules(text: String!): [Module]
   }
 
   schema {
@@ -58,6 +59,9 @@ const resolvers = {
     },
     moduleCategories (root, args, context) {
       return Modules.getCategories()
+    },
+    searchModules (root, { text }, context) {
+      return Modules.searchModules(text)
     }
   }
   /* Mutation: {

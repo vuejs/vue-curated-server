@@ -66,7 +66,6 @@ export async function getModules () {
         const [, label, url] = line.match(/\[(.+)]\((.+)\)/)
 
         const { owner, repoName } = parseGitUrl(url)
-        console.log(url, owner, repoName)
         const repo = gh.getRepo(owner, repoName)
 
         const module = {
