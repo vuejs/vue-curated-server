@@ -54,10 +54,10 @@ async function getLists () {
   let lists = listCache.get('lists')
   if (!lists) {
     lists = await GitHub.getModules(module)
-    detailsCache.set('lists', lists)
+    listCache.set('lists', lists)
     // Indexing
     for (const module of lists.modules) {
-      await getModuleDetails(module)
+      getModuleDetails(module)
     }
   }
   return lists
@@ -85,7 +85,9 @@ async function getModuleDetails (module) {
 
 export default {
   getModules: async () => {
+    const time = Date.now()
     const { modules } = await getLists()
+    console.log('getModules', Date.now() - time)
     return modules
   },
   getCategories: async () => {
