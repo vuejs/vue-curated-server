@@ -1,6 +1,6 @@
 # vue-curated-server
 
-A GraphQL server for curated vue packages, powered by Apollo.
+A GraphQL server for [curated vue packages](https://github.com/Akryum/vue-curated), powered by Apollo.
 
 ```
 npm install
