@@ -1,7 +1,7 @@
 import GitHub from 'github-api'
 
 const gh = new GitHub({
-  token: '03a8d8940cc2a4bdf453466cf02bee137e633efd'
+  token: process.env.GITHUB_TOKEN
 })
 
 let sourceRepo = gh.getRepo('Akryum', 'vue-curated')
@@ -29,57 +29,65 @@ export async function getModuleSource () {
 }
 
 export async function getModuleDetails (module) {
-  const details = await module.repo.getDetails()
-  return details.data
+  try {
+    const details = await module.repo.getDetails()
+    return details.data
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 export async function getModules () {
-  const file = await getModuleSource()
-  const rawSource = file.data
-  const lines = rawSource.split('\n')
-  const modules = []
-  const categories = []
-  let lastCategory
+  try {
+    const file = await getModuleSource()
+    const rawSource = file.data
+    const lines = rawSource.split('\n')
+    const modules = []
+    const categories = []
+    let lastCategory
 
-  for (let line of lines) {
-    // Category
-    if (line.indexOf('# ') === 0) {
-      const label = line.substr(2)
-      const id = generateId(label)
+    for (let line of lines) {
+      // Category
+      if (line.indexOf('# ') === 0) {
+        const label = line.substr(2)
+        const id = generateId(label)
 
-      lastCategory = {
-        id,
-        label,
-        modules: []
-      }
-      categories.push(lastCategory)
-    }
-
-    // Module
-    if (line.indexOf('- ') === 0) {
-      line = line.substr(2)
-      const [, label, url] = line.match(/\[(.+)]\((.+)\)/)
-
-      const { owner, repoName } = parseGitUrl(url)
-      console.log(url, owner, repoName)
-      const repo = gh.getRepo(owner, repoName)
-
-      const module = {
-        label,
-        url,
-        owner,
-        repoName,
-        repo,
-        category: lastCategory
+        lastCategory = {
+          id,
+          label,
+          modules: []
+        }
+        categories.push(lastCategory)
       }
 
-      modules.push(module)
-      lastCategory.modules.push(module)
-    }
-  }
+      // Module
+      if (line.indexOf('- ') === 0) {
+        line = line.substr(2)
+        const [, label, url] = line.match(/\[(.+)]\((.+)\)/)
 
-  return {
-    modules,
-    categories
+        const { owner, repoName } = parseGitUrl(url)
+        console.log(url, owner, repoName)
+        const repo = gh.getRepo(owner, repoName)
+
+        const module = {
+          label,
+          url,
+          owner,
+          repoName,
+          repo,
+          category: lastCategory
+        }
+
+        modules.push(module)
+        lastCategory.modules.push(module)
+      }
+    }
+
+    return {
+      modules,
+      categories
+    }
+  } catch (e) {
+    console.error(e)
   }
 }
