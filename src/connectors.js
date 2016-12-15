@@ -43,7 +43,6 @@ async function searchModules (searchText) {
       owner: {boost: 1}
     }
   })
-  console.log(result)
   return result.map(doc => {
     return modules.find(m => m.url === doc.ref)
   })
