@@ -36,7 +36,9 @@ const typeDefs = [`
 
   type Query {
     modules: [Module]
+    module(url: String!): Module
     moduleCategories: [ModuleCategory]
+    moduleCategory(id: String!): ModuleCategory
     searchModules(text: String!): [Module]
   }
 
@@ -54,15 +56,11 @@ const resolvers = {
     modules: category => category.modules
   },
   Query: {
-    modules (root, args, context) {
-      return Modules.getModules()
-    },
-    moduleCategories (root, args, context) {
-      return Modules.getCategories()
-    },
-    searchModules (root, { text }, context) {
-      return Modules.searchModules(text)
-    }
+    modules: (root, args, context) => Modules.getModules(),
+    module: (root, { url }, context) => Modules.getModule(url),
+    moduleCategories: (root, args, context) => Modules.getCategories(),
+    moduleCategory: (root, { id }, context) => Modules.getCategory(id),
+    searchModules: (root, { text }, context) => Modules.searchModules(text)
   }
   /* Mutation: {
     addTag: async (root, { type, label }, context) => {

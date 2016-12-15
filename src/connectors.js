@@ -63,6 +63,16 @@ async function getLists () {
   return lists
 }
 
+async function getModule (url) {
+  const { modules } = await getLists()
+  return modules.find(m => m.url === url)
+}
+
+async function getCategory (id) {
+  const { categories } = await getLists()
+  return categories.find(c => c.id === id)
+}
+
 async function getModuleDetails (module) {
   let details = detailsCache.get(module.url)
   if (!details) {
@@ -83,5 +93,7 @@ export default {
     return categories
   },
   getModuleDetails,
-  searchModules
+  searchModules,
+  getModule,
+  getCategory
 }
