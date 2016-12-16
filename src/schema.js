@@ -32,7 +32,7 @@ const typeDefs = [`
   type ModuleOwner {
     login: String
     avatar_url: String
-    url: String
+    html_url: String
   }
 
   type Query {
