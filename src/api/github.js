@@ -63,14 +63,18 @@ export async function getModules () {
       // Module
       if (line.indexOf('- ') === 0) {
         line = line.substr(2)
-        const [, label, url] = line.match(/\[(.+)]\((.+)\)/)
+        const parts = line.split(',')
+        const [, label, url] = parts[0].match(/\[(.+)]\((.+)\)/)
 
         const { owner, repoName } = parseGitUrl(url)
         const repo = gh.getRepo(owner, repoName)
 
+        const vueVersions = parts[1].trim().split('|')
+
         const module = {
           label,
           url,
+          vueVersions,
           owner,
           repoName,
           repo,

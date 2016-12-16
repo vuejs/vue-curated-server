@@ -1,5 +1,5 @@
 import LRU from 'lru-cache'
-import elasticlunr from 'elasticlunr'
+import Fuse from 'fuse.js'
 
 import * as GitHub from './api/github'
 
@@ -16,36 +16,64 @@ const listCache = LRU({
 
 // Search
 
-const index = elasticlunr(function () {
-  this.addField('label')
-  this.addField('url')
-  this.addField('description')
-  this.addField('owner')
-  this.setRef('url')
+let index = []
+const fuse = new Fuse(index, {
+  include: ['score'],
+  shouldSort: true,
+  threshold: 0.4,
+  location: 0,
+  distance: 100,
+  maxPatternLength: 32,
+  minMatchCharLength: 1,
+  keys: [
+    {
+      name: 'label',
+      weight: 0.3
+    },
+    {
+      name: 'url',
+      weight: 0.1
+    },
+    {
+      name: 'category',
+      weight: 0.1
+    },
+    {
+      name: 'description',
+      weight: 0.1
+    },
+    {
+      name: 'owner',
+      weight: 0.1
+    }
+  ],
+  id: 'url'
 })
 
 function indexModule (module, details) {
-  index.addDoc({
+  const doc = {
     url: module.url,
     label: module.label,
+    category: module.category.label,
     description: details.description,
     owner: details.owner.login
-  })
+  }
+  const i = index.findIndex(doc => doc.url === module.url)
+  if (i === -1) {
+    index.push(doc)
+  } else {
+    index[i] = doc
+  }
 }
 
 async function searchModules (searchText) {
+  if (!searchText) {
+    return []
+  }
   const { modules } = await getLists()
-  const result = index.search(searchText, {
-    fields: {
-      label: {boost: 2},
-      description: {boost: 1},
-      url: {boost: 1},
-      owner: {boost: 1}
-    }
-  })
-  return result.map(doc => {
-    return modules.find(m => m.url === doc.ref)
-  })
+  const result = fuse.search(searchText)
+  console.log(result)
+  return result.map(r => modules.find(m => m.url === r.item))
 }
 
 // Data
@@ -85,9 +113,7 @@ async function getModuleDetails (module) {
 
 export default {
   getModules: async () => {
-    const time = Date.now()
     const { modules } = await getLists()
-    console.log('getModules', Date.now() - time)
     return modules
   },
   getCategories: async () => {

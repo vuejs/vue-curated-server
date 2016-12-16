@@ -8,6 +8,7 @@ const typeDefs = [`
   type Module {
     url: String
     label: String
+    vueVersions: [String]
     details: ModuleDetails
     category: ModuleCategory
   }
