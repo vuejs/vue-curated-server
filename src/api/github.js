@@ -7,7 +7,9 @@ const gh = new GitHub({
 
 const moduleFields = [
   { key: 'vue', array: true },
-  { key: 'links', array: true, map: parseMarkdownLink }
+  { key: 'links', array: true, map: parseMarkdownLink },
+  { key: 'status' },
+  { key: 'badge' }
 ]
 
 let sourceRepo = gh.getRepo('Akryum', 'vue-curated')

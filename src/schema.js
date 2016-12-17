@@ -5,12 +5,21 @@ import Modules from './connectors'
 // import { pubsub } from './subscriptions'
 
 const typeDefs = [`
+  type Link {
+    url: String
+    label: String
+  }
+
+  # Represents a vue module, plugin or package
   type Module {
     url: String
     label: String
-    vueVersions: [String]
     details: ModuleDetails
     category: ModuleCategory
+    vue: [String]
+    links: [Link]
+    badge: String
+    status: String
   }
 
   type ModuleCategory {
