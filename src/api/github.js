@@ -1,31 +1,23 @@
 import GitHub from 'github-api'
+import { parseMarkdownLink, parseGitUrl, parseData } from '../utils/parse'
 
 const gh = new GitHub({
   token: process.env.GITHUB_TOKEN
 })
 
+const moduleFields = [
+  { key: 'vue', array: true },
+  { key: 'links', array: true, map: parseMarkdownLink }
+]
+
 let sourceRepo = gh.getRepo('Akryum', 'vue-curated')
-
-function parseGitUrl (url) {
-  if (url.charAt(url.length - 1) === '/') {
-    url = url.substr(0, url.length - 1)
-  }
-
-  const parts = url.split('/')
-  const repoName = parts.pop()
-  const owner = parts.pop()
-  return {
-    repoName,
-    owner
-  }
-}
 
 function generateId (label) {
   return label.trim().toLowerCase().replace(/\s+/g, '_').replace(/\W/g, '')
 }
 
 export async function getModuleSource () {
-  return sourceRepo.getContents('master', 'MODULES.md', true)
+  return sourceRepo.getContents('master', 'PACKAGES.md', true)
 }
 
 export async function getModuleDetails (module) {
@@ -63,22 +55,22 @@ export async function getModules () {
       // Module
       if (line.indexOf('- ') === 0) {
         line = line.substr(2)
-        const parts = line.split(',')
-        const [, label, url] = parts[0].match(/\[(.+)]\((.+)\)/)
+        const { fullMatch, label, url } = parseMarkdownLink(line)
+        line = line.substr(fullMatch.length)
 
         const { owner, repoName } = parseGitUrl(url)
         const repo = gh.getRepo(owner, repoName)
 
-        const vueVersions = parts[1].trim().split('|')
+        const data = parseData(line, moduleFields)
 
         const module = {
           label,
           url,
-          vueVersions,
           owner,
           repoName,
           repo,
-          category: lastCategory
+          category: lastCategory,
+          ...data
         }
 
         modules.push(module)
