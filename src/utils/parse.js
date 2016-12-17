@@ -3,10 +3,12 @@ export function parseGitUrl (url) {
     url = url.substr(0, url.length - 1)
   }
 
+  const [, domain] = url.match(/https?:\/\/([\d\w.-]+)/i)
   const parts = url.split('/')
   const repoName = parts.pop()
   const owner = parts.pop()
   return {
+    domain,
     repoName,
     owner
   }

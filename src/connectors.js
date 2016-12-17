@@ -10,9 +10,9 @@ const detailsCache = LRU({
   maxAge: 1000 * 60
 })
 
-const listCache = LRU({
-  maxAge: 1000 * 60 * 5
-})
+const listCacheMaxTime = 1000 * 60 * 5
+let lastListTime = 0
+let listCache = null
 
 // Search
 
@@ -47,18 +47,19 @@ const fuse = new Fuse(index, {
       weight: 0.1
     }
   ],
-  id: 'url'
+  id: 'id'
 })
 
 function indexModule (module, details) {
   const doc = {
+    id: module.id,
     url: module.url,
     label: module.label,
     category: module.category.label,
     description: details.description,
     owner: details.owner.login
   }
-  const i = index.findIndex(doc => doc.url === module.url)
+  const i = index.findIndex(doc => doc.id === module.id)
   if (i === -1) {
     index.push(doc)
   } else {
@@ -73,27 +74,35 @@ async function searchModules (searchText) {
   const { modules } = await getLists()
   const result = fuse.search(searchText)
   console.log(result)
-  return result.map(r => modules.find(m => m.url === r.item))
+  return result.map(r => modules.find(m => m.id === r.item))
 }
 
 // Data
 
-async function getLists () {
-  let lists = listCache.get('lists')
-  if (!lists) {
-    lists = await GitHub.getModules(module)
-    listCache.set('lists', lists)
-    // Indexing
-    for (const module of lists.modules) {
-      getModuleDetails(module)
-    }
+async function fetchLists () {
+  const lists = await GitHub.getModules(module)
+  listCache = lists
+  lastListTime = Date.now()
+  // Indexing
+  for (const module of lists.modules) {
+    getModuleDetails(module)
   }
   return lists
 }
 
-async function getModule (url) {
+async function getLists () {
+  let lists = listCache
+  if (!lists) {
+    lists = await fetchLists()
+  } else if (Date.now() - lastListTime > listCacheMaxTime) {
+    fetchLists()
+  }
+  return lists
+}
+
+async function getModule (id) {
   const { modules } = await getLists()
-  return modules.find(m => m.url === url)
+  return modules.find(m => m.id === id)
 }
 
 async function getCategory (id) {
@@ -102,10 +111,10 @@ async function getCategory (id) {
 }
 
 async function getModuleDetails (module) {
-  let details = detailsCache.get(module.url)
+  let details = detailsCache.get(module.id)
   if (!details) {
     details = await GitHub.getModuleDetails(module)
-    detailsCache.set(module.url, details)
+    detailsCache.set(module.id, details)
     indexModule(module, details)
   }
   return details

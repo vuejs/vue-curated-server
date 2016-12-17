@@ -12,6 +12,7 @@ const typeDefs = [`
 
   # Represents a vue module, plugin or package
   type Module {
+    id: String
     url: String
     label: String
     details: ModuleDetails
@@ -46,7 +47,7 @@ const typeDefs = [`
 
   type Query {
     modules: [Module]
-    module(url: String!): Module
+    module(id: String!): Module
     moduleCategories: [ModuleCategory]
     moduleCategory(id: String!): ModuleCategory
     searchModules(text: String!): [Module]
@@ -67,7 +68,7 @@ const resolvers = {
   },
   Query: {
     modules: (root, args, context) => Modules.getModules(),
-    module: (root, { url }, context) => Modules.getModule(url),
+    module: (root, { id }, context) => Modules.getModule(id),
     moduleCategories: (root, args, context) => Modules.getCategories(),
     moduleCategory: (root, { id }, context) => Modules.getCategory(id),
     searchModules: (root, { text }, context) => Modules.searchModules(text)

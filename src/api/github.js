@@ -14,8 +14,12 @@ const moduleFields = [
 
 let sourceRepo = gh.getRepo('Akryum', 'vue-curated')
 
-function generateId (label) {
+function generateCategoryId (label) {
   return label.trim().toLowerCase().replace(/\s+/g, '_').replace(/\W/g, '')
+}
+
+function generateModuleId (domain, owner, repoName) {
+  return `${domain}::${owner}::${repoName}`
 }
 
 export async function getModuleSource () {
@@ -44,7 +48,7 @@ export async function getModules () {
       // Category
       if (line.indexOf('# ') === 0) {
         const label = line.substr(2)
-        const id = generateId(label)
+        const id = generateCategoryId(label)
 
         lastCategory = {
           id,
@@ -60,12 +64,14 @@ export async function getModules () {
         const { fullMatch, label, url } = parseMarkdownLink(line)
         line = line.substr(fullMatch.length)
 
-        const { owner, repoName } = parseGitUrl(url)
+        const { domain, owner, repoName } = parseGitUrl(url)
+        const id = generateModuleId(domain, owner, repoName)
         const repo = gh.getRepo(owner, repoName)
 
         const data = parseData(line, moduleFields)
 
         const module = {
+          id,
           label,
           url,
           owner,
