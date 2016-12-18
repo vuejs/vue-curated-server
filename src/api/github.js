@@ -19,7 +19,7 @@ function generateCategoryId (label) {
 }
 
 function generateModuleId (domain, owner, repoName) {
-  return `${domain}::${owner}::${repoName}`
+  return `${domain.replace(/\./g, '_')}::${owner}::${repoName}`
 }
 
 export async function getModuleSource () {
