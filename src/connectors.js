@@ -10,9 +10,28 @@ const detailsCache = LRU({
   maxAge: 1000 * 60
 })
 
+const readmeCache = LRU({
+  max: 500,
+  maxAge: 1000 * 60
+})
+
 const listCacheMaxTime = 1000 * 60 * 5
 let lastListTime = 0
 let listCache = null
+
+function wrapModuleCache (func, cache, freshCb = null) {
+  return async module => {
+    let data = cache.get(module.id)
+    if (!data) {
+      data = await func(module)
+      cache.set(module.id, data)
+      if (freshCb) {
+        freshCb(module, data)
+      }
+    }
+    return data
+  }
+}
 
 // Search
 
@@ -110,15 +129,9 @@ async function getCategory (id) {
   return categories.find(c => c.id === id)
 }
 
-async function getModuleDetails (module) {
-  let details = detailsCache.get(module.id)
-  if (!details) {
-    details = await GitHub.getModuleDetails(module)
-    detailsCache.set(module.id, details)
-    indexModule(module, details)
-  }
-  return details
-}
+const getModuleDetails = wrapModuleCache(GitHub.getModuleDetails, detailsCache, (module, data) => indexModule(module, data))
+
+const getModuleReadme = wrapModuleCache(GitHub.getModuleReadme, readmeCache)
 
 export default {
   getModules: async () => {
@@ -130,6 +143,7 @@ export default {
     return categories
   },
   getModuleDetails,
+  getModuleReadme,
   searchModules,
   getModule,
   getCategory

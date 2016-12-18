@@ -1,13 +1,19 @@
-
 import { makeExecutableSchema } from 'graphql-tools'
+import { Kind } from 'graphql/language'
 
 import Modules from './connectors'
 // import { pubsub } from './subscriptions'
 
 const typeDefs = [`
+  scalar Date
+
   type Link {
     url: String
     label: String
+  }
+
+  type Text {
+    content: String
   }
 
   # Represents a vue module, plugin or package
@@ -21,6 +27,7 @@ const typeDefs = [`
     links: [Link]
     badge: String
     status: String
+    readme: Text
   }
 
   type ModuleCategory {
@@ -37,6 +44,10 @@ const typeDefs = [`
     stargazers_count: Int
     watchers_count: Int
     open_issues_count: Int
+    has_wiki: Boolean
+    pushed_at: String
+    created_at: String
+    updated_at: String
   }
 
   type ModuleOwner {
@@ -59,9 +70,20 @@ const typeDefs = [`
 `]
 
 const resolvers = {
+  Date: {
+    __parseValue: value => new Date(value), // value from the client
+    __serialize: value => value.getTime(), // value sent to the client
+    __parseLiteral (ast) {
+      if (ast.kind === Kind.INT) {
+        return (parseInt(ast.value, 10)) // ast value is always in string format
+      }
+      return ast.value
+    }
+  },
   Module: {
     details: module => Modules.getModuleDetails(module),
-    category: module => module.category
+    category: module => module.category,
+    readme: module => Modules.getModuleReadme(module)
   },
   ModuleCategory: {
     modules: category => category.modules

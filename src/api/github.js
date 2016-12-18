@@ -28,8 +28,20 @@ export async function getModuleSource () {
 
 export async function getModuleDetails (module) {
   try {
-    const details = await module.repo.getDetails()
-    return details.data
+    const result = await module.repo.getDetails()
+    module.default_branch = result.data.default_branch
+    return result.data
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export async function getModuleReadme (module) {
+  try {
+    const result = await module.repo.getReadme(module.default_branch, true)
+    return {
+      content: result.data
+    }
   } catch (e) {
     console.error(e)
   }
@@ -78,6 +90,7 @@ export async function getModules () {
           repoName,
           repo,
           category: lastCategory,
+          default_branch: 'master',
           ...data
         }
 
