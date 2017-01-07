@@ -109,6 +109,9 @@ export async function getModules () {
       }
     }
 
+    categories.sort((a, b) => a.label < b.label ? -1 : 1)
+    releases.sort((a, b) => a.id < b.id ? -1 : 1)
+
     return {
       modules,
       categories,
