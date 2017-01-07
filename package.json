@@ -3,10 +3,14 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "dev": "nodemon src/index.js --exec babel-node --presets es2015,stage-0"
+    "start": "nodemon src/index.js --exec babel-node --presets es2015,stage-0"
   },
+  "main": "src/index.js",
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "6.9.1"
+  },
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.0.0",
