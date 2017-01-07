@@ -16,6 +16,11 @@ const typeDefs = [`
     content: String
   }
 
+  type Release {
+    id: String
+    label: String
+  }
+
   # Represents a vue module, plugin or package
   type Module {
     id: String
@@ -57,11 +62,11 @@ const typeDefs = [`
   }
 
   type Query {
-    modules: [Module]
+    modules(searchText: String, category: String, release: String): [Module]
     module(id: String!): Module
     moduleCategories: [ModuleCategory]
     moduleCategory(id: String!): ModuleCategory
-    searchModules(text: String!): [Module]
+    vueReleases: [Release]
   }
 
   schema {
@@ -78,41 +83,32 @@ const resolvers = {
         return (parseInt(ast.value, 10)) // ast value is always in string format
       }
       return ast.value
-    }
+    },
   },
   Module: {
     details: module => Modules.getModuleDetails(module),
     category: module => module.category,
-    readme: module => Modules.getModuleReadme(module)
+    readme: module => Modules.getModuleReadme(module),
   },
   ModuleCategory: {
-    modules: category => category.modules
+    modules: category => category.modules,
   },
   Query: {
-    modules: (root, args, context) => Modules.getModules(),
+    modules: (root, { searchText, category, release }, context) => Modules.getModules({
+      searchText,
+      category,
+      release,
+    }),
     module: (root, { id }, context) => Modules.getModule(id),
     moduleCategories: (root, args, context) => Modules.getCategories(),
     moduleCategory: (root, { id }, context) => Modules.getCategory(id),
-    searchModules: (root, { text }, context) => Modules.searchModules(text)
-  }
-  /* Mutation: {
-    addTag: async (root, { type, label }, context) => {
-      console.log(`adding ${type} tag '${label}'`)
-      const newTag = await Tags.addTag(type, label)
-      pubsub.publish('tagAdded', newTag)
-      return newTag
-    }
+    vueReleases: (root, args, context) => Modules.getVueReleases(),
   },
-  Subscription: {
-    tagAdded (tag) {
-      return tag
-    }
-  } */
 }
 
 const jsSchema = makeExecutableSchema({
   typeDefs,
-  resolvers
+  resolvers,
 })
 
 export default jsSchema

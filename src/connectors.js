@@ -7,12 +7,12 @@ import * as GitHub from './api/github'
 
 const detailsCache = LRU({
   max: 500,
-  maxAge: 1000 * 60
+  maxAge: 1000 * 60,
 })
 
 const readmeCache = LRU({
   max: 500,
-  maxAge: 1000 * 60
+  maxAge: 1000 * 60,
 })
 
 const listCacheMaxTime = 1000 * 60 * 5
@@ -47,26 +47,26 @@ const fuse = new Fuse(index, {
   keys: [
     {
       name: 'label',
-      weight: 0.3
+      weight: 0.3,
     },
     {
       name: 'url',
-      weight: 0.1
+      weight: 0.1,
     },
     {
       name: 'category',
-      weight: 0.1
+      weight: 0.1,
     },
     {
       name: 'description',
-      weight: 0.1
+      weight: 0.1,
     },
     {
       name: 'owner',
-      weight: 0.1
-    }
+      weight: 0.1,
+    },
   ],
-  id: 'id'
+  id: 'id',
 })
 
 function indexModule (module, details) {
@@ -76,7 +76,7 @@ function indexModule (module, details) {
     label: module.label,
     category: module.category.label,
     description: details.description,
-    owner: details.owner.login
+    owner: details.owner.login,
   }
   const i = index.findIndex(doc => doc.id === module.id)
   if (i === -1) {
@@ -86,11 +86,10 @@ function indexModule (module, details) {
   }
 }
 
-async function searchModules (searchText) {
+async function searchModules (modules, searchText) {
   if (!searchText) {
     return []
   }
-  const { modules } = await getLists()
   const result = fuse.search(searchText)
   console.log(result)
   return result.map(r => modules.find(m => m.id === r.item))
@@ -133,18 +132,37 @@ const getModuleDetails = wrapModuleCache(GitHub.getModuleDetails, detailsCache, 
 
 const getModuleReadme = wrapModuleCache(GitHub.getModuleReadme, readmeCache)
 
-export default {
-  getModules: async () => {
-    const { modules } = await getLists()
+async function getModules ({ searchText, category, release }) {
+  let { modules } = await getLists()
+
+  // Filters
+  if (category) {
+    modules = modules.filter(m => m.category.id === category)
+  }
+
+  if (release) {
+    modules = modules.filter(m => m.vue.some(v => v === release))
+  }
+
+  if (searchText) {
+    return searchModules(modules, searchText)
+  } else {
     return modules
-  },
+  }
+}
+
+export default {
+  getModules,
   getCategories: async () => {
     const { categories } = await getLists()
     return categories
   },
+  getVueReleases: async () => {
+    const { releases } = await getLists()
+    return releases
+  },
   getModuleDetails,
   getModuleReadme,
-  searchModules,
   getModule,
-  getCategory
+  getCategory,
 }

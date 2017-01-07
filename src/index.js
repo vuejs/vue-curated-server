@@ -23,7 +23,7 @@ app.use(bodyParser.json())
 app.use('/graphql', graphqlExpress({ schema }))
 
 app.use('/graphiql', graphiqlExpress({
-  endpointURL: '/graphql'
+  endpointURL: '/graphql',
 }))
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
@@ -38,5 +38,5 @@ websocketServer.listen(WS_PORT, () => console.log(`Websocket server listening on
 
 /* eslint-disable no-new */
 new SubscriptionServer({
-  subscriptionManager
+  subscriptionManager,
 }, websocketServer)

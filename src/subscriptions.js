@@ -8,10 +8,10 @@ const subscriptionManager = new SubscriptionManager({
   setupFunctions: {
     tagAdded: (options, args) => ({
       tagAdded: {
-        filter: tag => tag.type === args.type
-      }
-    })
-  }
+        filter: tag => tag.type === args.type,
+      },
+    }),
+  },
 })
 
 export { subscriptionManager, pubsub }

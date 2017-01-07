@@ -10,7 +10,7 @@ export function parseGitUrl (url) {
   return {
     domain,
     repoName,
-    owner
+    owner,
   }
 }
 
@@ -54,6 +54,6 @@ export function parseMarkdownLink (text) {
   return {
     fullMatch,
     label,
-    url
+    url,
   }
 }

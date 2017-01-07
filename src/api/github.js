@@ -2,14 +2,14 @@ import GitHub from 'github-api'
 import { parseMarkdownLink, parseGitUrl, parseData } from '../utils/parse'
 
 const gh = new GitHub({
-  token: process.env.GITHUB_TOKEN
+  token: process.env.GITHUB_TOKEN,
 })
 
 const moduleFields = [
   { key: 'vue', array: true },
   { key: 'links', array: true, map: parseMarkdownLink },
   { key: 'status' },
-  { key: 'badge' }
+  { key: 'badge' },
 ]
 
 let sourceRepo = gh.getRepo('Akryum', 'vue-curated')
@@ -40,7 +40,7 @@ export async function getModuleReadme (module) {
   try {
     const result = await module.repo.getReadme(module.default_branch, true)
     return {
-      content: result.data
+      content: result.data,
     }
   } catch (e) {
     console.error(e)
@@ -54,6 +54,7 @@ export async function getModules () {
     const lines = rawSource.split('\n')
     const modules = []
     const categories = []
+    const releases = []
     let lastCategory
 
     for (let line of lines) {
@@ -65,7 +66,7 @@ export async function getModules () {
         lastCategory = {
           id,
           label,
-          modules: []
+          modules: [],
         }
         categories.push(lastCategory)
       }
@@ -91,8 +92,17 @@ export async function getModules () {
           repo,
           category: lastCategory,
           default_branch: 'master',
-          ...data
+          ...data,
         }
+
+        data.vue.forEach(vue => {
+          if (!releases.find(r => r.id === vue)) {
+            releases.push({
+              id: vue,
+              label: `Vue ${vue}`,
+            })
+          }
+        })
 
         modules.push(module)
         lastCategory.modules.push(module)
@@ -101,7 +111,8 @@ export async function getModules () {
 
     return {
       modules,
-      categories
+      categories,
+      releases,
     }
   } catch (e) {
     console.error(e)
