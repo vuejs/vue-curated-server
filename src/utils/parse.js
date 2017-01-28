@@ -57,3 +57,17 @@ export function parseMarkdownLink (text) {
     url,
   }
 }
+
+export function parseRepoId (id) {
+  if (id) {
+    const [owner, name] = id.split('::')
+    return {
+      owner,
+      name,
+    }
+  }
+}
+
+export function generateRepoId (owner, name) {
+  return `${owner}::${name}`
+}

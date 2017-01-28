@@ -1,5 +1,7 @@
+
 import GitHub from 'github-api'
-import { parseMarkdownLink, parseGitUrl, parseData } from '../utils/parse'
+
+import { parseMarkdownLink, parseGitUrl, parseData, parseRepoId } from '../utils/parse'
 
 const gh = new GitHub({
   token: process.env.GITHUB_TOKEN,
@@ -22,23 +24,33 @@ function generateModuleId (domain, owner, repoName) {
   return `${domain.replace(/\./g, '_')}::${owner}::${repoName}`
 }
 
-export async function getModuleSource () {
+async function getModuleSource () {
   return sourceRepo.getContents('master', 'PACKAGES.md', true)
 }
 
-export async function getModuleDetails (module) {
+export function getRepo (owner, name) {
+  return gh.getRepo(owner, name)
+}
+
+export function getRepoFromId (id) {
+  const { owner, name } = parseRepoId(id)
+  return getRepo(owner, name)
+}
+
+export async function getRepoDetails (repo) {
   try {
-    const result = await module.repo.getDetails()
-    module.default_branch = result.data.default_branch
+    console.log('fetch details')
+    const result = await repo.getDetails()
     return result.data
   } catch (e) {
     console.error(e)
   }
 }
 
-export async function getModuleReadme (module) {
+export async function getRepoReadme (repo) {
   try {
-    const result = await module.repo.getReadme(module.default_branch, true)
+    console.log('fetch readme')
+    const result = await repo.getReadme(undefined, true)
     return {
       content: result.data,
     }
@@ -66,7 +78,6 @@ export async function getModules () {
         lastCategory = {
           id,
           label,
-          modules: [],
         }
         categories.push(lastCategory)
       }
@@ -79,7 +90,6 @@ export async function getModules () {
 
         const { domain, owner, repoName } = parseGitUrl(url)
         const id = generateModuleId(domain, owner, repoName)
-        const repo = gh.getRepo(owner, repoName)
 
         const data = parseData(line, moduleFields)
 
@@ -89,9 +99,7 @@ export async function getModules () {
           url,
           owner,
           repoName,
-          repo,
-          category: lastCategory,
-          default_branch: 'master',
+          category_id: lastCategory.id,
           ...data,
         }
 
@@ -105,7 +113,6 @@ export async function getModules () {
         })
 
         modules.push(module)
-        lastCategory.modules.push(module)
       }
     }
 

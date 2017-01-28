@@ -1,42 +1,14 @@
-import express from 'express'
-import cors from 'cors'
-import bodyParser from 'body-parser'
-import { graphqlExpress, graphiqlExpress } from 'graphql-server-express'
 
-// Subs
-import { createServer } from 'http'
-import { SubscriptionServer } from 'subscriptions-transport-ws'
-import { subscriptionManager } from './subscriptions'
+import { launchApiEndpoint } from './endpoint'
+import { updateDatasets } from './jobs/update'
 
-import schema from './schema'
+const UPDATE_INTERVAL = process.env.UPDATE_INTERVAL || 5 * 60 * 1000
 
-const PORT = 3000
-const WS_PORT = 3030
+updateDatasets().then(() => {
+  launchApiEndpoint()
 
-var app = express()
+  // Periodic update
+  setInterval(updateDatasets, UPDATE_INTERVAL)
 
-app.use(cors())
-
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
-
-app.use('/graphql', graphqlExpress({ schema }))
-
-app.use('/graphiql', graphiqlExpress({
-  endpointURL: '/graphql',
-}))
-
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
-
-// Subs
-const websocketServer = createServer((request, response) => {
-  response.writeHead(404)
-  response.end()
+  // TODO GitHub web hooks
 })
-
-websocketServer.listen(WS_PORT, () => console.log(`Websocket server listening on ${WS_PORT}`))
-
-/* eslint-disable no-new */
-new SubscriptionServer({
-  subscriptionManager,
-}, websocketServer)
