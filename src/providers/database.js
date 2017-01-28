@@ -7,7 +7,7 @@ const idIndex = {
 }
 
 export const modules = modelFactory(collectionFactory('modules', idIndex))
-export const categories = modelFactory(collectionFactory('categories', idIndex), false)
+export const categories = modelFactory(collectionFactory('categories', idIndex, false))
 
 export function clearDatabase () {
   return Promise.all([
