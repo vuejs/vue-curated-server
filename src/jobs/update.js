@@ -11,8 +11,6 @@ export async function updateDatasets () {
       releases,
     } = await GitHub.getModules()
 
-    // console.log(modules, categories, releases)
-
     await Database.modules.sync(modules)
     await Database.categories.sync(categories)
     Memory.vueReleases.reset(releases)

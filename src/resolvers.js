@@ -2,6 +2,7 @@
 import { Kind } from 'graphql/language'
 
 import * as Modules from './connectors/modules'
+import * as NpmPackages from './connectors/npm-packages'
 
 export const resolvers = {
   Date: {
@@ -20,10 +21,15 @@ export const resolvers = {
     category: module => Modules.getCategory(module.category_id),
     readme: module => Modules.getModuleReadme(module.id),
     releases: module => Modules.getModuleReleases(module.id),
+    npm_package: module => Modules.getModuleNpmPackage(module.id),
   },
 
   ModuleCategory: {
     modules: category => Modules.getModules({ category: category.id }),
+  },
+
+  NpmPackage: {
+    range_downloads: (npmPackage, { range }) => NpmPackages.getRangeDownloads(npmPackage.name, range),
   },
 
   Query: {

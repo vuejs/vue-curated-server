@@ -35,6 +35,7 @@ export const typeDefs = [`
     status: String
     readme: Text
     releases: [ModuleRelease]
+    npm_package: NpmPackage
   }
 
   type ModuleCategory {
@@ -52,6 +53,7 @@ export const typeDefs = [`
     watchers_count: Int
     open_issues_count: Int
     has_wiki: Boolean
+    default_branch: String
     pushed_at: String
     created_at: String
     updated_at: String
@@ -71,6 +73,18 @@ export const typeDefs = [`
     prerelease: Boolean
     published_at: String
     files: [DownloadFile]
+  }
+
+  type NpmPackage {
+    name: String
+    version: String
+    # Downloads for each day in the range. Defaults: range='last-month'
+    range_downloads (range: String): [DownloadDay]
+  }
+
+  type DownloadDay {
+    day: String
+    downloads: Int
   }
 
   type Query {

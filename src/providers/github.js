@@ -57,6 +57,15 @@ export async function getRepoReadme (repo) {
   }
 }
 
+export async function getRepoContents (repo, path) {
+  try {
+    const result = await repo.getContents(undefined, path, true)
+    return result.data
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export async function getRepoReleases (repo) {
   try {
     const result = await repo.listReleases()

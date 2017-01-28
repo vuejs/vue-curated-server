@@ -24,3 +24,18 @@ export const repoReleases = cacheFactory({
   refresh: (owner, name) => GitHub.getRepoReleases(GitHub.getRepo(owner, name)),
   resolveKey: generateRepoId,
 })
+
+export const repoPackageJson = cacheFactory({
+  max: 500,
+  maxAge: 1000 * 60 * 5,
+  refresh: async (owner, name) => {
+    const data = await GitHub.getRepoContents(GitHub.getRepo(owner, name), 'package.json')
+    if (data) {
+      return {
+        name: data.name,
+        version: data.version,
+      }
+    }
+  },
+  resolveKey: generateRepoId,
+})
