@@ -17,6 +17,7 @@ export const typeDefs = [`
     download_count: Int
   }
 
+  # Major Vue Release, used to filter modules
   type VueRelease {
     id: String
     label: String
@@ -24,16 +25,24 @@ export const typeDefs = [`
 
   # Represents a vue module, plugin or package
   type Module {
+    # <host_platform>::<owner>::<repo>
     id: String
     url: String
     label: String
+    # Git repository details
     details: ModuleDetails
     category: ModuleCategory
+    # Compatible Vue releases
     vue: [String]
+    # Useful links
     links: [Link]
+    # Special badge (ex: 'official')
     badge: String
+    # Developpement status (ex: 'stable')
     status: String
+    # Default 'Readme.md' contents
     readme: Text
+    # GitHub release tags
     releases: [ModuleRelease]
     npm_package: NpmPackage
   }
@@ -44,6 +53,7 @@ export const typeDefs = [`
     modules: [Module]
   }
 
+  # Git repository details
   type ModuleDetails {
     name: String
     description: String
@@ -83,11 +93,13 @@ export const typeDefs = [`
   }
 
   type DownloadDay {
+    # Format: 'yyyy-mm-dd'
     day: String
     downloads: Int
   }
 
   type Query {
+    # Specify a category id or a Vue release id to filter the result. Defaults: category=undefined, release=undefined
     modules(category: String, release: String): [Module]
     module(id: String!): Module
     module_categories: [ModuleCategory]
