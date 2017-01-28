@@ -3,6 +3,7 @@
 A GraphQL server for [curated vue packages](https://github.com/Akryum/vue-curated), powered by Apollo.
 
 Set the `GITHUB_TOKEN` env var with a GitHub OAuth token.
+Set the `DB_PATH` env var with a path to the database folder with write access.
 
 ```
 npm install
