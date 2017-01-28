@@ -39,7 +39,6 @@ export function getRepoFromId (id) {
 
 export async function getRepoDetails (repo) {
   try {
-    console.log('fetch details')
     const result = await repo.getDetails()
     return result.data
   } catch (e) {
@@ -49,11 +48,35 @@ export async function getRepoDetails (repo) {
 
 export async function getRepoReadme (repo) {
   try {
-    console.log('fetch readme')
     const result = await repo.getReadme(undefined, true)
     return {
       content: result.data,
     }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export async function getRepoReleases (repo) {
+  try {
+    const result = await repo.listReleases()
+    return result.data.map(release => {
+      return {
+        id: release.id,
+        html_url: release.html_url,
+        name: release.name,
+        body: release.body,
+        prerelease: release.prerelease,
+        published_at: release.published_at,
+        files: release.assets.map(asset => {
+          return {
+            download_url: asset.browser_download_url,
+            size: asset.size,
+            download_count: asset.download_count,
+          }
+        }),
+      }
+    })
   } catch (e) {
     console.error(e)
   }

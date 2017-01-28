@@ -19,6 +19,7 @@ export const resolvers = {
     details: module => Modules.getModuleDetails(module.id),
     category: module => Modules.getCategory(module.category_id),
     readme: module => Modules.getModuleReadme(module.id),
+    releases: module => Modules.getModuleReleases(module.id),
   },
 
   ModuleCategory: {

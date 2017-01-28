@@ -17,3 +17,10 @@ export const repoDetails = cacheFactory({
   refresh: (owner, name) => GitHub.getRepoDetails(GitHub.getRepo(owner, name)),
   resolveKey: generateRepoId,
 })
+
+export const repoReleases = cacheFactory({
+  max: 500,
+  maxAge: 1000 * 60 * 5,
+  refresh: (owner, name) => GitHub.getRepoReleases(GitHub.getRepo(owner, name)),
+  resolveKey: generateRepoId,
+})

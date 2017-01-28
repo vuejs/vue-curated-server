@@ -27,6 +27,11 @@ export async function getModuleReadme (moduleId) {
   return Cache.repoReadmes.get(module.owner, module.repoName)
 }
 
+export async function getModuleReleases (moduleId) {
+  const module = await getModule(moduleId)
+  return Cache.repoReleases.get(module.owner, module.repoName)
+}
+
 export function getModules (filter) {
   const query = filterFactory(filter, {
     category: 'category_id',

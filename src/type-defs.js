@@ -11,7 +11,13 @@ export const typeDefs = [`
     content: String
   }
 
-  type Release {
+  type DownloadFile {
+    download_url: String
+    size: Int
+    download_count: Int
+  }
+
+  type VueRelease {
     id: String
     label: String
   }
@@ -28,6 +34,7 @@ export const typeDefs = [`
     badge: String
     status: String
     readme: Text
+    releases: [ModuleRelease]
   }
 
   type ModuleCategory {
@@ -56,12 +63,22 @@ export const typeDefs = [`
     html_url: String
   }
 
+  type ModuleRelease {
+    id: Int
+    html_url: String
+    name: String
+    body: String
+    prerelease: Boolean
+    published_at: String
+    files: [DownloadFile]
+  }
+
   type Query {
     modules(category: String, release: String): [Module]
     module(id: String!): Module
     module_categories: [ModuleCategory]
     module_category(id: String!): ModuleCategory
-    vue_releases: [Release]
+    vue_releases: [VueRelease]
   }
 
   schema {
