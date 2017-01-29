@@ -73,6 +73,7 @@ export async function getRepoReleases (repo) {
       return {
         id: release.id,
         html_url: release.html_url,
+        tag_name: release.tag_name,
         name: release.name,
         body: release.body,
         prerelease: release.prerelease,

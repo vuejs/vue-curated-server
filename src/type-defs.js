@@ -78,6 +78,7 @@ export const typeDefs = [`
   type ModuleRelease {
     id: Int
     html_url: String
+    tag_name: String
     name: String
     body: String
     prerelease: Boolean
