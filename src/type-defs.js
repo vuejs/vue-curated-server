@@ -2,33 +2,44 @@
 export const typeDefs = [`
   scalar Date
 
+  # Represents an absolute URL
   type Link {
-    url: String
+    url: String!
     label: String
   }
 
+  # Text contents
   type Text {
     content: String
   }
 
+  # Downloadable file URL & general info
   type DownloadFile {
-    download_url: String
+    download_url: String!
     size: Int
     download_count: Int
   }
 
+  # Main entities
+  interface Entity {
+    id: ID!
+    label: String!
+  }
+
   # Major Vue Release, used to filter modules
-  type VueRelease {
-    id: String
-    label: String
+  type VueRelease implements Entity {
+    id: ID!
+    label: String!
   }
 
   # Represents a vue module, plugin or package
-  type Module {
+  type Module implements Entity {
     # <host_platform>::<owner>::<repo>
-    id: String
-    url: String
-    label: String
+    id: ID!
+    # Displayed name
+    label: String!
+    # Repo URL
+    url: String!
     # Git repository details
     details: ModuleDetails
     category: ModuleCategory
@@ -47,13 +58,14 @@ export const typeDefs = [`
     npm_package: NpmPackage
   }
 
-  type ModuleCategory {
-    id: String
-    label: String
+  # Category like 'routing' or 'state management'
+  type ModuleCategory implements Entity {
+    id: ID!
+    label: String!
     modules: [Module]
   }
 
-  # Git repository details
+  # Module Git repository details
   type ModuleDetails {
     name: String
     description: String
@@ -69,23 +81,30 @@ export const typeDefs = [`
     updated_at: String
   }
 
+  # User or Org owning the repository
   type ModuleOwner {
-    login: String
+    # Name
+    login: String!
     avatar_url: String
     html_url: String
   }
 
+  # Release (GitHub)
   type ModuleRelease {
     id: Int
     html_url: String
+    # Used on GitHub, e.g. 'v1.0'
     tag_name: String
     name: String
+    # Release description
     body: String
     prerelease: Boolean
     published_at: String
+    # Downloadable files
     files: [DownloadFile]
   }
 
+  # Package from npm registry
   type NpmPackage {
     name: String
     version: String
@@ -93,18 +112,25 @@ export const typeDefs = [`
     range_downloads (range: String): [DownloadDay]
   }
 
+  # Downloads stats unit
   type DownloadDay {
     # Format: 'yyyy-mm-dd'
     day: String
+    # Downloads count
     downloads: Int
   }
 
+  # Entry queries
   type Query {
-    # Specify a category id or a Vue release id to filter the result. Defaults: category=undefined, release=undefined
+    # Get module list. Specify a category id or a Vue release id to filter the result. Defaults: category=undefined, release=undefined
     modules(category: String, release: String): [Module]
-    module(id: String!): Module
+    # Get a single module by its id
+    module(id: ID!): Module
+    # Get all module categories
     module_categories: [ModuleCategory]
-    module_category(id: String!): ModuleCategory
+    # Get a single module category by its id
+    module_category(id: ID!): ModuleCategory
+    # Get all represented Vue releases
     vue_releases: [VueRelease]
   }
 
