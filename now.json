@@ -1,0 +1,8 @@
+{
+  "name": "vue-curated-server",
+  "alias": "vue-curated-api",
+  "env": {
+    "SOURCE_REPO": "yyx990803/vue-curated",
+    "DB_PATH": "/tmp"
+  }
+}
