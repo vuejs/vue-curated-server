@@ -1,6 +1,6 @@
 # vue-curated-server
 
-A GraphQL server for [curated vue packages](https://github.com/Akryum/vue-curated), powered by Apollo.
+A GraphQL server for [curated vue packages](https://github.com/vuejs/vue-curated), powered by Apollo.
 
 Set the `GITHUB_TOKEN` env var with a GitHub OAuth token.
 
