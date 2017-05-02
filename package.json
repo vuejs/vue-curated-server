@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "6.9.1"
+    "node": "7.x"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
