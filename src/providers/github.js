@@ -1,12 +1,30 @@
 
 import GitHub from 'github-api'
-
 import { parseMarkdownLink, parseGitUrl, parseData, parseRepoId } from '../utils/parse'
 
+// GitHub API token
+const TOKEN = process.env.GITHUB_TOKEN
+if (!TOKEN) {
+  throw new Error('Please provide a GitHub API token with the `GITHUB_TOKEN` env var.')
+}
+
+// Source repo
+const repoRaw = process.env.SOURCE_REPO
+if (!repoRaw) {
+  throw new Error('Please provide the source repo where the packages are listed with the `SOURCE_REPO` env var, e.g. SOURCE_REPO=vuejs/vue-curated')
+}
+const repoStrings = repoRaw.split('/')
+if (repoStrings.length !== 2) {
+  throw new Error('The `SOURCE_REPO` value must be of the form <owner>/<repo>, e.g. SOURCE_REPO=vuejs/vue-curated')
+}
+const OWNER = repoStrings[0]
+const REPO = repoStrings[1]
+
 const gh = new GitHub({
-  token: process.env.GITHUB_TOKEN,
+  token: TOKEN,
 })
 
+// Fields parsed from the md file
 const moduleFields = [
   { key: 'vue', array: true },
   { key: 'links', array: true, map: parseMarkdownLink },
@@ -14,7 +32,8 @@ const moduleFields = [
   { key: 'badge' },
 ]
 
-let sourceRepo = gh.getRepo('Akryum', 'vue-curated')
+// GitHub repo containing the packages list
+let sourceRepo = gh.getRepo(OWNER, REPO)
 
 function generateCategoryId (label) {
   return label.trim().toLowerCase().replace(/\s+/g, '_').replace(/\W/g, '')
