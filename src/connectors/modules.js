@@ -38,6 +38,13 @@ export async function getModuleNpmPackage (moduleId) {
 }
 
 export function getModules (filter) {
+  if (filter.release === '_LATEST_') {
+    const latest = getLatestVueRelease()
+    if (latest) {
+      filter.release = latest.id
+    }
+  }
+
   const query = filterFactory(filter, {
     category: 'category_id',
     release: 'vue',
@@ -47,4 +54,9 @@ export function getModules (filter) {
 
 export function getVueReleases () {
   return Memory.vueReleases.items
+}
+
+export function getLatestVueRelease () {
+  const list = getVueReleases()
+  return list.length !== 0 && list[0]
 }

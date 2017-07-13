@@ -122,7 +122,7 @@ export const typeDefs = [`
 
   # Entry queries
   type Query {
-    # Get module list. Specify a category id or a Vue release id to filter the result. Defaults: category=undefined, release=undefined
+    # Get module list. Specify a category id or a Vue release id to filter the result. Use release='_LATEST_' to use latest vue release. Defaults: category=undefined, release=undefined
     modules(category: String, release: String): [Module]
     # Get a single module by its id
     module(id: ID!): Module
