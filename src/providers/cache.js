@@ -29,12 +29,16 @@ export const repoPackageJson = cacheFactory({
   max: 500,
   maxAge: 1000 * 60 * 5,
   refresh: async (owner, name) => {
-    const data = await GitHub.getRepoContents(GitHub.getRepo(owner, name), 'package.json')
-    if (data) {
-      return {
-        name: data.name,
-        version: data.version,
+    try {
+      const data = await GitHub.getRepoContents(GitHub.getRepo(owner, name), 'package.json')
+      if (data) {
+        return {
+          name: data.name,
+          version: data.version,
+        }
       }
+    } catch (e) {
+      // No package.json
     }
   },
   resolveKey: generateRepoId,
