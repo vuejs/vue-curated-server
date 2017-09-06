@@ -16,3 +16,10 @@ npm start
 ```
 
 By default, the graphql endpoint is `http://localhost:3000` and GraphiQL is available at `http://localhost:3000/graphiql`. You can change the port with the `PORT` env var.
+
+## Deployement
+
+```
+now -e GITHUB_TOKEN=xxx
+now alias
+```
