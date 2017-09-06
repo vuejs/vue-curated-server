@@ -20,6 +20,6 @@ By default, the graphql endpoint is `http://localhost:3000` and GraphiQL is avai
 ## Deployement
 
 ```
-now -e GITHUB_TOKEN=xxx
+now --public -e GITHUB_TOKEN=xxx
 now alias
 ```
