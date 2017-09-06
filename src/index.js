@@ -1,3 +1,5 @@
+import 'babel-core/register'
+import 'babel-polyfill'
 
 import { launchApiEndpoint } from './endpoint'
 import { updateDatasets } from './jobs/update'
