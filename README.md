@@ -2,7 +2,7 @@
 
 A GraphQL server for [curated vue packages](https://github.com/vuejs/vue-curated), powered by Apollo.
 
-Set the `GITHUB_TOKEN` env var with a GitHub OAuth token.
+Set the `GITHUB_TOKEN` env var with a [GitHub API access token](https://github.com/settings/tokens).
 
 Set the `SOURCE_REPO` env var with the repo containing the `PACKAGES.md` file on the root of the `master` branch. For example: `SOURCE_REPO=vuejs/vue-curated`.
 
