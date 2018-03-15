@@ -6,17 +6,15 @@
     "dev": "nodemon src/index.js --exec babel-node",
     "clean": "rm -rf build && mkdir build",
     "build": "NODE_ENV=production npm run clean && babel -d ./build ./src -s",
-    "start": "npm run start:deamon && npm run logs",
+    "start": "npm run start:deamon",
     "start:single": "node build/index.js",
-    "start:deamon": "pm2 start build/index.js",
-    "stop": "pm2 stop build/index.js",
-    "logs": "pm2 logs"
+    "start:deamon": "forever build/index.js -f --minUptime 10000 --spinSleepTime 10000"
   },
   "main": "src/index.js",
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "7.x"
+    "node": "8.x"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -41,6 +39,7 @@
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
     "express": "^4.15.3",
+    "forever": "^0.15.3",
     "github-api": "^3.0.0",
     "global": "^4.3.2",
     "graphql": "^0.10.3",
@@ -49,7 +48,6 @@
     "graphql-tools": "^1.1.0",
     "lodash": "^4.17.4",
     "lru-cache": "^4.1.1",
-    "nedb": "^1.8.0",
-    "pm2": "^2.6.1"
+    "nedb": "^1.8.0"
   }
 }
