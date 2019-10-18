@@ -1,5 +1,9 @@
 # vue-curated-server
 
+Deprecated in favor of [AwesomeJS.dev](https://github.com/Akryum/awesomejs.dev/)
+
+---
+
 A GraphQL server for [curated vue packages](https://github.com/vuejs/vue-curated), powered by Apollo.
 
 Set the `GITHUB_TOKEN` env var with a [GitHub API access token](https://github.com/settings/tokens).
